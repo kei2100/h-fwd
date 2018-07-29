@@ -8,7 +8,7 @@ import (
 	"github.com/kei2100/fwxy/rewrite"
 )
 
-// Destination configuration
+// Destination is configuration parameters for the destination
 type Destination struct {
 	To           string            // Destination proto://host[:port]
 	Username     string            // Username or blank. for basic authN
@@ -22,51 +22,51 @@ type Destination struct {
 }
 
 // Host returns the host or host:port
-func (c *Destination) Host() string {
-	return c.host
+func (dp *Destination) Host() string {
+	return dp.host
 }
 
 // Scheme returns the scheme
-func (c *Destination) Scheme() string {
-	return c.scheme
+func (dp *Destination) Scheme() string {
+	return dp.scheme
 }
 
 // UserInfo returns the *url.UserInfo or nil
-func (c *Destination) UserInfo() *url.Userinfo {
-	return c.userInfo
+func (dp *Destination) UserInfo() *url.Userinfo {
+	return dp.userInfo
 }
 
 // PathRewriters returns path rewriters
-func (c *Destination) PathRewriters() []rewrite.PathRewriter {
-	return c.pathRewriters
+func (dp *Destination) PathRewriters() []rewrite.PathRewriter {
+	return dp.pathRewriters
 }
 
-// load url infos given configuration
-func (c *Destination) load() error {
-	if c == nil {
+// load configuration given parameters
+func (dp *Destination) load() error {
+	if dp == nil {
 		return nil
 	}
 
-	u, err := url.Parse(c.To)
+	u, err := url.Parse(dp.To)
 	if err != nil {
-		return fmt.Errorf("config: failed to parse Destination.To %v  to URL: %v", c.To, err)
+		return fmt.Errorf("config: failed to parse Destination.To %v  to URL: %v", dp.To, err)
 	}
 	if u.Scheme != "http" && u.Scheme != "https" {
 		return fmt.Errorf("config: invalid scheme %v", u.Scheme)
 	}
-	c.host = u.Host
-	c.scheme = u.Scheme
+	dp.host = u.Host
+	dp.scheme = u.Scheme
 
-	if c.Username != "" {
-		c.userInfo = url.UserPassword(c.Username, c.Password)
+	if dp.Username != "" {
+		dp.userInfo = url.UserPassword(dp.Username, dp.Password)
 	}
 
-	for old, new := range c.RewritePaths {
+	for old, new := range dp.RewritePaths {
 		rwr, err := rewrite.NewRewriter(old, new)
 		if err != nil {
 			return fmt.Errorf("config: failed to interpret the rewrite string %v to %v", old, new)
 		}
-		c.pathRewriters = append(c.pathRewriters, rwr)
+		dp.pathRewriters = append(dp.pathRewriters, rwr)
 	}
 	return nil
 }
