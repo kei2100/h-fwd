@@ -20,7 +20,9 @@ type MultiLine interface {
 	// Add an error.
 	// If the error is nil, Add panics.
 	Add(error)
-
+	// AddIf add an error.
+	// If the error is nil, do nothing.
+	AddIfErr(error)
 	// Len returns the count of errors
 	Len() int
 }
@@ -34,6 +36,12 @@ func (e *multiLine) Add(err error) {
 		panic("errors: err is nil")
 	}
 	e.errs = append(e.errs, err)
+}
+
+func (e *multiLine) AddIfErr(err error) {
+	if err != nil {
+		e.Add(err)
+	}
 }
 
 func (e *multiLine) Len() int {
