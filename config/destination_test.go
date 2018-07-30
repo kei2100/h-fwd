@@ -4,7 +4,7 @@ import "testing"
 
 func TestDestination(t *testing.T) {
 	c := &Destination{
-		To:       "https://example.com/",
+		Dest:     "https://example.com/",
 		Username: "user",
 		Password: "pass",
 		RewritePaths: map[string]string{
