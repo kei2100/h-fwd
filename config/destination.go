@@ -10,7 +10,7 @@ import (
 
 // Destination is configuration parameters for the destination
 type Destination struct {
-	To           string            // Destination proto://host[:port]
+	Dest         string            // Destination proto://host[:port]
 	Username     string            // Username or blank. for basic authN
 	Password     string            // Password or blank. for basic authN
 	RewritePaths map[string]string // map[oldPath]newPath
@@ -47,9 +47,9 @@ func (dp *Destination) load() error {
 		return nil
 	}
 
-	u, err := url.Parse(dp.To)
+	u, err := url.Parse(dp.Dest)
 	if err != nil {
-		return fmt.Errorf("config: failed to parse Destination.To %v  to URL: %v", dp.To, err)
+		return fmt.Errorf("config: failed to parse Destination.Dest %v  to URL: %v", dp.Dest, err)
 	}
 	if u.Scheme != "http" && u.Scheme != "https" {
 		return fmt.Errorf("config: invalid scheme %v", u.Scheme)
