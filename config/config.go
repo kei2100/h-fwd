@@ -1,10 +1,15 @@
 package config
 
-import "github.com/kei2100/fwxy/errors"
+import (
+	"net/http"
+
+	"github.com/kei2100/fwxy/errors"
+)
 
 // Parameters is the configuration parameters
 type Parameters struct {
 	Destination
+	Header http.Header
 }
 
 // Load configuration given parameters
