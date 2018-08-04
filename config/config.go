@@ -10,6 +10,7 @@ import (
 type Parameters struct {
 	Destination
 	Header http.Header
+	TLSClient
 }
 
 // Load configuration given parameters
