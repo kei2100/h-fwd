@@ -1,22 +1,22 @@
 package config
 
 import (
-	"net/http"
-
 	"github.com/kei2100/fwxy/errors"
 )
 
 // Parameters is the configuration parameters
 type Parameters struct {
-	Destination
-	Header http.Header
+	URL
+	Headers
 	TLSClient
 }
 
 // Load configuration given parameters
 func (p *Parameters) Load() error {
 	errs := errors.NewMultiLine()
-	errs.AddIfErr(p.Destination.load())
+	errs.AddIfErr(p.URL.load())
+	errs.AddIfErr(p.Headers.load())
+	errs.AddIfErr(p.TLSClient.load())
 	if errs.Len() > 0 {
 		return errs
 	}

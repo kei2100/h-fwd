@@ -13,13 +13,14 @@ import (
 
 var (
 	// option parameters for the url configuration
-	username     string
-	password     string
 	rewritePaths []string
 )
 
 var (
-	headers []string
+	// option parameters for the headers configuration
+	headers  []string
+	username string
+	password string
 )
 
 var (
@@ -49,11 +50,11 @@ var RootCmd = &cobra.Command{
 	Short: "fwxy is a simple HTTP forward proxy",
 	Run: func(cmd *cobra.Command, args []string) {
 		param := config.Parameters{}
-		param.Username = username
-		param.Password = password
 		param.RewritePaths = parseRewritePaths(rewritePaths)
 
 		param.Header = parseHeaders(headers)
+		param.Username = username
+		param.Password = password
 
 		param.CACertPath = caCertPath
 		param.PKCS12Path = pkcs12Path
