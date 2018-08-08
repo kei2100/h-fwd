@@ -13,22 +13,22 @@ type URL struct {
 }
 
 // PathRewriters returns path rewriters
-func (dp *URL) PathRewriters() []rewrite.PathRewriter {
-	return dp.pathRewriters
+func (u *URL) PathRewriters() []rewrite.PathRewriter {
+	return u.pathRewriters
 }
 
 // load configuration given parameters
-func (dp *URL) load() error {
-	if dp == nil {
+func (u *URL) load() error {
+	if u == nil {
 		return nil
 	}
 
-	for old, new := range dp.RewritePaths {
+	for old, new := range u.RewritePaths {
 		rwr, err := rewrite.NewRewriter(old, new)
 		if err != nil {
 			return fmt.Errorf("config: failed to interpret the rewrite string %v to %v", old, new)
 		}
-		dp.pathRewriters = append(dp.pathRewriters, rwr)
+		u.pathRewriters = append(u.pathRewriters, rwr)
 	}
 	return nil
 }

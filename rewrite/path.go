@@ -2,10 +2,8 @@ package rewrite
 
 import (
 	"fmt"
-	"log"
 	"net/url"
 	"regexp"
-	"strings"
 )
 
 // PathRewriter is an interface to path rewrite
@@ -44,30 +42,6 @@ func (r *regexpPathRewriter) Do(u *url.URL) bool {
 	if replaced == orig {
 		return false
 	}
-
-	b := new(strings.Builder)
-	b.WriteString(u.Scheme)
-	b.WriteString("://")
-	if ui := u.User.String(); len(ui) > 0 {
-		b.WriteString(ui)
-		b.WriteString("@")
-	}
-	b.WriteString(u.Host)
-	b.WriteString(replaced)
-	if len(u.RawQuery) > 0 {
-		b.WriteString("?")
-		b.WriteString(u.RawQuery)
-	}
-	if len(u.Fragment) > 0 {
-		b.WriteString("#")
-		b.WriteString(u.Fragment)
-	}
-
-	newu, err := url.Parse(b.String())
-	if err != nil {
-		log.Printf("rewrite: failed to regexp path rewrite: %v", err)
-		return false
-	}
-	*u = *newu
+	u.Path = replaced
 	return true
 }
