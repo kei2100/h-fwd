@@ -1,13 +1,17 @@
 package cli
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
 	"log"
 
+	"errors"
+	"net"
+	"net/url"
+
 	"github.com/kei2100/h-fwd/config"
+	"github.com/kei2100/h-fwd/hfwd"
 	"github.com/spf13/cobra"
 )
 
@@ -30,6 +34,12 @@ var (
 	pkcs12Password string
 )
 
+var (
+	// TODO flags
+	lnAddr = "127.0.0.1"
+	lnPort = "8080"
+)
+
 func init() {
 	flags := RootCmd.PersistentFlags()
 
@@ -37,7 +47,7 @@ func init() {
 	flags.StringVarP(&password, "password", "p", "", "password for the basic authentication")
 	flags.StringSliceVarP(&rewritePaths, "rewrite", "r", []string{}, "list for path rewrite (-r /old:/new -r /o:/n OR -r /old:/new,/o:/n)")
 
-	flags.StringSliceVarP(&headers, "header", "H", []string{}, "list for the additional http headers (-H Host:https://example.com -H 'User-Agent:My Agent'")
+	flags.StringSliceVarP(&headers, "header", "H", []string{}, "list for the additional http headers (-H Host:https://custom.example.com -H 'User-Agent:My Agent'")
 
 	flags.StringVar(&caCertPath, "ca-cert", "", "path of the PEM encoded CA certificate")
 	flags.StringVar(&pkcs12Path, "pkcs12", "", "path of the PKCS12 encoded file for the client certification")
@@ -46,24 +56,51 @@ func init() {
 
 // RootCmd for CLI
 var RootCmd = &cobra.Command{
-	Use:   "hfwd",
+	Use:   "hfwd <destination URL>",
 	Short: "hfwd is a simple HTTP forward proxy",
+	Args: func(cmd *cobra.Command, args []string) error {
+		if len(args) == 0 {
+			return errors.New("requires at the <destination URL>")
+		}
+		return nil
+	},
+	//Example: "", // TODO
 	Run: func(cmd *cobra.Command, args []string) {
-		param := config.Parameters{}
-		param.RewritePaths = parseRewritePaths(rewritePaths)
+		dst, err := url.Parse(args[0])
+		if err != nil {
+			log.Fatalf("failed to parse the <desitination URL>: %v", err)
+		}
 
-		param.Header = parseHeaders(headers)
-		param.Username = username
-		param.Password = password
+		params := config.Parameters{}
+		params.RewritePaths = parseRewritePaths(rewritePaths)
 
-		param.CACertPath = caCertPath
-		param.PKCS12Path = pkcs12Path
-		param.PKCS12Password = pkcs12Password
+		params.Header = parseHeaders(headers)
+		params.Username = username
+		params.Password = password
 
-		if err := param.Load(); err != nil {
+		params.CACertPath = caCertPath
+		params.PKCS12Path = pkcs12Path
+		params.PKCS12Password = pkcs12Password
+
+		if err := params.Load(); err != nil {
 			log.Fatalf("failed to load configuration: %v", err)
 		}
-		fmt.Printf("%+v", param)
+
+		handler, err := hfwd.NewHandler(dst, &params)
+		if err != nil {
+			log.Fatalf("failed to setup the foward proxy: %v", err)
+		}
+
+		ln, err := net.Listen("tcp", lnAddr+":"+lnPort)
+		if err != nil {
+			log.Fatalf("failed to listening start at %v:%v: %v", lnAddr, lnPort, err)
+		}
+		defer ln.Close()
+
+		log.Printf("hfwd listening on %v:%v", lnAddr, lnPort)
+		out := http.Serve(ln, handler)
+
+		log.Println(out)
 	},
 }
 
