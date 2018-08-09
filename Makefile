@@ -31,7 +31,7 @@ test:
 test.nocache:
 	richgo test -count=1 -v -race $(PACKAGES)
 
-bin: vendor bin/fwxy
+bin: vendor bin/hfwd
 
-bin/fwxy: $(shell find $(DIRS) -name '*.go')
-	go build -o $@ ./fwxy.go
+bin/hfwd: $(shell find $(DIRS) -name '*.go')
+	go build -o $@ ./hfwd.go

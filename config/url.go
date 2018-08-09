@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 
-	"github.com/kei2100/fwxy/rewrite"
+	"github.com/kei2100/h-fwd/rewrite"
 )
 
 // URL is configuration parameters for the destination

@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/kei2100/fwxy/cli"
+	"github.com/kei2100/h-fwd/cli"
 )
 
 func main() {

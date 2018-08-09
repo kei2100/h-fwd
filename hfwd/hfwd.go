@@ -1,4 +1,4 @@
-package fwxy
+package hfwd
 
 import (
 	"errors"
@@ -10,7 +10,7 @@ import (
 	"io"
 	"log"
 
-	"github.com/kei2100/fwxy/config"
+	"github.com/kei2100/h-fwd/config"
 )
 
 // NewHandler returns http.Handler which performs forward proxy.
@@ -18,7 +18,7 @@ import (
 // params are configuration parameters of the forward proxy.
 func NewHandler(dst *url.URL, params *config.Parameters) (http.Handler, error) {
 	if dst == nil {
-		return nil, errors.New("fwxy: failed to create new handler. dst must be set")
+		return nil, errors.New("hfwd: failed to create new handler. dst must be set")
 	}
 	// TODO dst validation
 	forwarder := &http.Client{
@@ -36,7 +36,7 @@ type server struct {
 func (s *server) ServeHTTP(w http.ResponseWriter, orig *http.Request) {
 	req, err := http.NewRequest(orig.Method, orig.URL.String(), orig.Body)
 	if err != nil {
-		log.Printf("fwxy: failed to create a new request: %v", err)
+		log.Printf("hfwd: failed to create a new request: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -46,7 +46,7 @@ func (s *server) ServeHTTP(w http.ResponseWriter, orig *http.Request) {
 
 	res, err := s.forwarder.Do(req)
 	if err != nil {
-		log.Printf("fwxy: an error occurrd while forwarding the request: %v", err)
+		log.Printf("hfwd: an error occurrd while forwarding the request: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

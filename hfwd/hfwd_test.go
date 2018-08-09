@@ -1,4 +1,4 @@
-package fwxy
+package hfwd
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/kei2100/fwxy/config"
+	"github.com/kei2100/h-fwd/config"
 )
 
 func mustURL(u string) *url.URL {

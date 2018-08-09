@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"io/ioutil"
 
-	"github.com/kei2100/fwxy/errors"
+	"github.com/kei2100/h-fwd/errors"
 	"golang.org/x/crypto/pkcs12"
 )
 

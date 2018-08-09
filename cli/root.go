@@ -7,7 +7,7 @@ import (
 
 	"log"
 
-	"github.com/kei2100/fwxy/config"
+	"github.com/kei2100/h-fwd/config"
 	"github.com/spf13/cobra"
 )
 
@@ -46,8 +46,8 @@ func init() {
 
 // RootCmd for CLI
 var RootCmd = &cobra.Command{
-	Use:   "fwxy",
-	Short: "fwxy is a simple HTTP forward proxy",
+	Use:   "hfwd",
+	Short: "hfwd is a simple HTTP forward proxy",
 	Run: func(cmd *cobra.Command, args []string) {
 		param := config.Parameters{}
 		param.RewritePaths = parseRewritePaths(rewritePaths)

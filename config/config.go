@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/kei2100/fwxy/errors"
+	"github.com/kei2100/h-fwd/errors"
 )
 
 // Parameters is the configuration parameters
