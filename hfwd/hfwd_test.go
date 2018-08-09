@@ -5,9 +5,6 @@ import (
 	"net/url"
 	"testing"
 
-	"net"
-	"net/http"
-
 	"github.com/kei2100/h-fwd/config"
 )
 
@@ -78,17 +75,4 @@ func TestServer_rewriteURL(t *testing.T) {
 			}
 		}
 	})
-}
-
-// TODO delete
-func TestCoreLogic(t *testing.T) {
-	t.SkipNow()
-	params := configParam()
-	s := &server{dst: mustURL("https://www.google.com"), params: params, forwarder: http.DefaultClient}
-	ln, err := net.Listen("tcp", "localhost:8080")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer ln.Close()
-	http.Serve(ln, s)
 }
