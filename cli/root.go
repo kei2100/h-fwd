@@ -15,6 +15,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// listen addr:port
+var lnAddr string
+
 var (
 	// option parameters for the url configuration
 	rewritePaths []string
@@ -34,14 +37,10 @@ var (
 	pkcs12Password string
 )
 
-var (
-	// TODO flags
-	lnAddr = "127.0.0.1"
-	lnPort = "8080"
-)
-
 func init() {
 	flags := RootCmd.PersistentFlags()
+
+	flags.StringVarP(&lnAddr, "listen", "l", "127.0.0.1:8080", "listen addr:port")
 
 	flags.StringVarP(&username, "username", "u", "", "username for the basic authentication")
 	flags.StringVarP(&password, "password", "p", "", "password for the basic authentication")
@@ -91,13 +90,13 @@ var RootCmd = &cobra.Command{
 			log.Fatalf("failed to setup the foward proxy: %v", err)
 		}
 
-		ln, err := net.Listen("tcp", lnAddr+":"+lnPort)
+		ln, err := net.Listen("tcp", lnAddr)
 		if err != nil {
-			log.Fatalf("failed to listening start at %v:%v: %v", lnAddr, lnPort, err)
+			log.Fatalf("failed to listening start at %v: %v", lnAddr, err)
 		}
 		defer ln.Close()
 
-		log.Printf("hfwd listening on %v:%v", lnAddr, lnPort)
+		log.Printf("hfwd listening on %v", lnAddr)
 		out := http.Serve(ln, handler)
 
 		log.Println(out)
