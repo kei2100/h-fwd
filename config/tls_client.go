@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"log"
+
 	"github.com/kei2100/h-fwd/errors"
 	"golang.org/x/crypto/pkcs12"
 )
@@ -88,7 +90,11 @@ func (t *TLSClient) loadTLSConfig() error {
 		cfg.Certificates = []tls.Certificate{cert}
 	}
 	if certPEM := t.caCertPEM; certPEM != nil {
-		p := x509.NewCertPool()
+		p, err := x509.SystemCertPool()
+		if err != nil {
+			log.Printf("config: system cert pool is not available. creates a new cert pool: %v", err)
+			p = x509.NewCertPool()
+		}
 		if ok := p.AppendCertsFromPEM(certPEM); !ok {
 			return fmt.Errorf("config: failed to append ca cert file %v (%v bytes)", t.CACertPath, len(certPEM))
 		}
