@@ -49,7 +49,7 @@ func init() {
 
 	flags.StringSliceVarP(&headers, "header", "H", []string{}, "list for the additional http headers (-H Host:https://custom.example.com -H 'User-Agent:My Agent'")
 
-	flags.StringVar(&caCertPath, "ca-cert", "", "path of the PEM encoded CA certificate")
+	flags.StringVar(&caCertPath, "ca-cert", "", "path of the additional CA certificate PEM")
 	flags.StringVar(&pkcs12Path, "pkcs12", "", "path of the PKCS12 encoded file for the client certification")
 	flags.StringVar(&pkcs12Password, "pkcs12-password", "", "password for the PKCS12 file")
 }
