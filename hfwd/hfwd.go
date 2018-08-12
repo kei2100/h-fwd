@@ -17,14 +17,25 @@ import (
 // dst represents destination base URL. the format must be "http[s]://[user:pass@]host[:port][/base/path]"
 // params are configuration parameters of the forward proxy.
 func NewHandler(dst *url.URL, params *config.Parameters) (http.Handler, error) {
-	if dst == nil {
-		return nil, errors.New("hfwd: failed to create new handler. dst must be set")
+	if err := validateDestinatin(dst); err != nil {
+		return nil, err
 	}
-	// TODO dst validation
 	forwarder := &http.Client{
 		Transport: &http.Transport{TLSClientConfig: params.TLSClientConfig()},
 	}
 	return &server{dst: dst, params: params, forwarder: forwarder}, nil
+}
+
+func validateDestinatin(dst *url.URL) error {
+	switch {
+	case dst == nil:
+	case dst.Scheme != "http" && dst.Scheme != "https":
+	case len(dst.Opaque) > 0:
+	case len(dst.RawQuery) > 0:
+	case len(dst.Fragment) > 0:
+		return errors.New("hfwd: destination URL format must be 'http[s]://[user:pass@]host[:port][/base/path]'")
+	}
+	return nil
 }
 
 type server struct {
