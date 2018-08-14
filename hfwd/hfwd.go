@@ -10,6 +10,8 @@ import (
 	"io"
 	"log"
 
+	"net/http/httputil"
+
 	"github.com/kei2100/h-fwd/config"
 )
 
@@ -62,6 +64,14 @@ func (s *server) ServeHTTP(w http.ResponseWriter, orig *http.Request) {
 		return
 	}
 	defer res.Body.Close()
+
+	if s.params.Verbose {
+		d, err := httputil.DumpRequestOut(req, true)
+		if err != nil {
+			log.Printf("hfwd: failed to dump the request: %v", err)
+		}
+		log.Println(string(d))
+	}
 
 	for h, vv := range res.Header {
 		for _, v := range vv {
