@@ -2,8 +2,11 @@ package rewrite
 
 import (
 	"fmt"
+	"log"
 	"net/url"
 	"regexp"
+
+	"github.com/kei2100/h-fwd/env"
 )
 
 // PathRewriter is an interface to path rewrite
@@ -40,8 +43,14 @@ func (r *regexpPathRewriter) Do(u *url.URL) bool {
 	}
 	replaced := r.rex.ReplaceAllString(orig, r.repl)
 	if replaced == orig {
+		if env.Verbose {
+			log.Printf("rewrite: path not rewrite\nexpr: %v\nrequested: %v", r.rex.String(), orig)
+		}
 		return false
 	}
 	u.Path = replaced
+	if env.Verbose {
+		log.Printf("rewrite: path rewrited\nexpr: %v\nrequested: %v\nrewrited: %v", r.rex.String(), orig, replaced)
+	}
 	return true
 }

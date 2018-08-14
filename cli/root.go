@@ -108,7 +108,11 @@ var RootCmd = &cobra.Command{
 func parseRewritePaths(rewritePaths []string) map[string]string {
 	m := make(map[string]string, len(rewritePaths))
 	for _, p := range rewritePaths {
-		sp := strings.SplitAfterN(p, ":", 2)
+		sp := strings.SplitN(p, ":", 2)
+		if len(sp) != 2 {
+			log.Fatalln("-r --rewrite must be <old>:<new>")
+			continue
+		}
 		m[sp[0]] = sp[1]
 	}
 	return m
@@ -117,8 +121,12 @@ func parseRewritePaths(rewritePaths []string) map[string]string {
 func parseHeaders(headers []string) http.Header {
 	hh := make(http.Header, len(headers))
 	for _, h := range headers {
-		sp := strings.SplitAfterN(h, ":", 2)
+		sp := strings.SplitN(h, ":", 2)
 		hh.Add(sp[0], sp[1])
+		if len(sp) != 2 {
+			log.Fatalln("-H --header must be <name>:<value>")
+			continue
+		}
 	}
 	return hh
 }
