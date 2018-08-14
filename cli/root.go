@@ -11,6 +11,7 @@ import (
 	"net/url"
 
 	"github.com/kei2100/h-fwd/config"
+	"github.com/kei2100/h-fwd/env"
 	"github.com/kei2100/h-fwd/hfwd"
 	"github.com/spf13/cobra"
 )
@@ -70,8 +71,9 @@ var RootCmd = &cobra.Command{
 			log.Fatalf("failed to parse the <desitination URL>: %v", err)
 		}
 
+		env.Verbose = verbose
+
 		params := config.Parameters{}
-		params.Verbose = verbose
 		params.RewritePaths = parseRewritePaths(rewritePaths)
 
 		params.Header = parseHeaders(headers)

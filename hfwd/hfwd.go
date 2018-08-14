@@ -13,6 +13,7 @@ import (
 	"net/http/httputil"
 
 	"github.com/kei2100/h-fwd/config"
+	"github.com/kei2100/h-fwd/env"
 )
 
 // NewHandler returns http.Handler which performs forward proxy.
@@ -65,12 +66,12 @@ func (s *server) ServeHTTP(w http.ResponseWriter, orig *http.Request) {
 	}
 	defer res.Body.Close()
 
-	if s.params.Verbose {
+	if env.Verbose {
 		d, err := httputil.DumpRequestOut(req, true)
 		if err != nil {
 			log.Printf("hfwd: failed to dump the request: %v", err)
 		}
-		log.Println(string(d))
+		log.Printf("hfwd: send a request\n%v", string(d))
 	}
 
 	for h, vv := range res.Header {
