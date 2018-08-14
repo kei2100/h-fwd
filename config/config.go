@@ -4,7 +4,7 @@ import (
 	"github.com/kei2100/h-fwd/errors"
 )
 
-// Parameters is the configuration parameters
+// Parameters is the configuration parameters for the hfwd proxy server
 type Parameters struct {
 	URL
 	Headers

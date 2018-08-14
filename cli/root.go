@@ -11,12 +11,14 @@ import (
 	"net/url"
 
 	"github.com/kei2100/h-fwd/config"
+	"github.com/kei2100/h-fwd/env"
 	"github.com/kei2100/h-fwd/hfwd"
 	"github.com/spf13/cobra"
 )
 
 // listen addr:port
 var lnAddr string
+var verbose bool
 
 var (
 	// option parameters for the url configuration
@@ -41,11 +43,11 @@ func init() {
 	flags := RootCmd.PersistentFlags()
 
 	flags.StringVarP(&lnAddr, "listen", "l", "127.0.0.1:8080", "listen addr:port")
+	flags.BoolVar(&verbose, "verbose", false, "verbose output")
 
+	flags.StringSliceVarP(&rewritePaths, "rewrite", "r", []string{}, "list for path rewrite (-r /old:/new -r /o:/n OR -r /old:/new,/o:/n)")
 	flags.StringVarP(&username, "username", "u", "", "username for the basic authentication")
 	flags.StringVarP(&password, "password", "p", "", "password for the basic authentication")
-	flags.StringSliceVarP(&rewritePaths, "rewrite", "r", []string{}, "list for path rewrite (-r /old:/new -r /o:/n OR -r /old:/new,/o:/n)")
-
 	flags.StringSliceVarP(&headers, "header", "H", []string{}, "list for the additional http headers (-H Host:https://custom.example.com -H 'User-Agent:My Agent'")
 
 	flags.StringVar(&caCertPath, "ca-cert", "", "path of the additional CA certificate PEM")
@@ -63,12 +65,13 @@ var RootCmd = &cobra.Command{
 		}
 		return nil
 	},
-	//Example: "", // TODO
 	Run: func(cmd *cobra.Command, args []string) {
 		dst, err := url.Parse(args[0])
 		if err != nil {
 			log.Fatalf("failed to parse the <desitination URL>: %v", err)
 		}
+
+		env.Verbose = verbose
 
 		params := config.Parameters{}
 		params.RewritePaths = parseRewritePaths(rewritePaths)
@@ -98,7 +101,6 @@ var RootCmd = &cobra.Command{
 
 		log.Printf("hfwd listening on %v", lnAddr)
 		out := http.Serve(ln, handler)
-
 		log.Println(out)
 	},
 }
