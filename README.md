@@ -10,7 +10,7 @@ $ hfwd https://example.com
 Sending a request to http://127.0.0.1:8080, will be forwarded to https://example.com 
 
 ## Downloads
-[releases](./releases)
+[releases](../../releases)
 
 ## Features
 Regexp based path rewriting
