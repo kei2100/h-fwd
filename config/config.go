@@ -9,6 +9,7 @@ type Parameters struct {
 	URL
 	Headers
 	TLSClient
+	Verbose bool
 }
 
 // Load configuration given parameters
