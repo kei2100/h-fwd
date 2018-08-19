@@ -82,8 +82,8 @@ var RootCmd = &cobra.Command{
 		params.PKCS12Path = pkcs12Path
 		params.PKCS12Password = pkcs12Password
 
-		if err := params.Load(); err != nil {
-			log.Fatalf("failed to load configuration: %v", err)
+		if err := params.Setup(); err != nil {
+			log.Fatalf("failed to setup configuration: %v", err)
 		}
 
 		handler, err := hfwd.NewHandler(dst, &params)

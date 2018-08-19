@@ -13,8 +13,8 @@ func TestURL(t *testing.T) {
 		},
 	}
 
-	if err := c.load(); err != nil {
-		t.Fatalf("failed to load URL config: %v", err)
+	if err := c.setup(); err != nil {
+		t.Fatalf("failed to setup URL config: %v", err)
 	}
 	if g, w := len(c.PathRewriters()), 2; g != w {
 		t.Errorf("len(c.PathRewriters()) got %v, want %v", g, w)

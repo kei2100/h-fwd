@@ -18,8 +18,8 @@ func (u *URL) PathRewriters() []PathRewriter {
 	return u.pathRewriters
 }
 
-// load configuration given parameters
-func (u *URL) load() error {
+// setup configuration given parameters
+func (u *URL) setup() error {
 	if u == nil {
 		return nil
 	}
