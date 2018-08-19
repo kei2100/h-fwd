@@ -12,8 +12,8 @@ type Headers struct {
 	Password string // Password or blank. for basic authN
 }
 
-// load configuration given parameters
-func (h *Headers) load() error {
+// setup configuration given parameters
+func (h *Headers) setup() error {
 	if len(h.Username) > 0 {
 		src := []byte(h.Username + ":" + h.Password)
 		dst := base64.StdEncoding.EncodeToString(src)

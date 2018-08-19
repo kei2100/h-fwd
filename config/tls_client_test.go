@@ -13,7 +13,7 @@ func TestTLSClient(t *testing.T) {
 		PKCS12Path:     "testdata/clicert.pfx",
 		PKCS12Password: "pass",
 	}
-	if err := tlsp.load(); err != nil {
+	if err := tlsp.setup(); err != nil {
 		t.Fatal(err)
 	}
 

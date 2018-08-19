@@ -74,8 +74,8 @@ func configParam(subconfig ...interface{}) *config.Parameters {
 		}
 	}
 
-	if err := c.Load(); err != nil {
-		panic(fmt.Sprintf("failed load configuration: %v", err))
+	if err := c.Setup(); err != nil {
+		panic(fmt.Sprintf("failed setup configuration: %v", err))
 	}
 	return &c
 }

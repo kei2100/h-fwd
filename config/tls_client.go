@@ -34,8 +34,8 @@ func (t *TLSClient) TLSClientConfig() *tls.Config {
 	return t.tlsConfig
 }
 
-// load configuration given parameters
-func (t *TLSClient) load() error {
+// setup configuration given parameters
+func (t *TLSClient) setup() error {
 	d := new(errors.DoOrSkip)
 	d.DoOrSkip(t.loadCACert)
 	d.DoOrSkip(t.loadPKCS12)
@@ -43,7 +43,7 @@ func (t *TLSClient) load() error {
 	return d.Err()
 }
 
-// loadCACert normally called from the load() method
+// loadCACert normally called from the setup() method
 func (t *TLSClient) loadCACert() error {
 	if t.CACertPath == "" {
 		return nil
@@ -56,7 +56,7 @@ func (t *TLSClient) loadCACert() error {
 	return nil
 }
 
-// loadPKCS12 normally called from the load() method
+// loadPKCS12 normally called from the setup() method
 func (t *TLSClient) loadPKCS12() error {
 	if t.PKCS12Path == "" {
 		return nil
@@ -78,7 +78,7 @@ func (t *TLSClient) loadPKCS12() error {
 	return nil
 }
 
-// loadTLSConfig normally called from the load() method
+// loadTLSConfig normally called from the setup() method
 func (t *TLSClient) loadTLSConfig() error {
 	cfg := tls.Config{}
 

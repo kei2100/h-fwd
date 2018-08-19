@@ -14,8 +14,8 @@ func TestHeaders(t *testing.T) {
 		Username: "user",
 		Password: "pass",
 	}
-	if err := h.load(); err != nil {
-		t.Fatalf("failed to load :%v", err)
+	if err := h.setup(); err != nil {
+		t.Fatalf("failed to setup :%v", err)
 	}
 
 	tt := []struct {
