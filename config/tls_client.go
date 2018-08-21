@@ -11,6 +11,8 @@ import (
 
 	"log"
 
+	"strings"
+
 	"github.com/kei2100/h-fwd/errors"
 	"golang.org/x/crypto/pkcs12"
 )
@@ -27,6 +29,18 @@ type TLSClient struct {
 	keyPEM    []byte
 
 	tlsConfig *tls.Config
+}
+
+// String returns string representation of this configuration. useful for debugging.
+func (t *TLSClient) String() string {
+	b := strings.Builder{}
+	if t == nil {
+		return b.String()
+	}
+	b.WriteString(fmt.Sprintf("CACertPath: %s\n", t.CACertPath))
+	b.WriteString(fmt.Sprintf("PKCS12Path: %s\n", t.PKCS12Path))
+	b.WriteString(fmt.Sprintf("PKCS12Password: %s\n", strings.Repeat("*", len(t.PKCS12Password))))
+	return b.String()
 }
 
 // TLSClientConfig returns *tls.Config for the tls client certification

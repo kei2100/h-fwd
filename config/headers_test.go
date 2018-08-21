@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 	"testing"
@@ -30,5 +31,24 @@ func TestHeaders(t *testing.T) {
 		if g, w := got, te.want; g != w {
 			t.Errorf("%v got %v, want %v", te.key, g, w)
 		}
+	}
+}
+
+func TestHeaders_String(t *testing.T) {
+	header := http.Header{}
+	header.Set("Authorization", "Bearer foo")
+	h := &Headers{
+		Header:   header,
+		Username: "user",
+		Password: "pass",
+	}
+	got := fmt.Sprintf("%v", h)
+	want := `Username: user
+Password: ****
+Header: Authorization: **********
+`
+
+	if g, w := got, want; g != w {
+		t.Errorf("String() got %v, want %v", g, w)
 	}
 }

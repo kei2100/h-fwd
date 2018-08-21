@@ -5,6 +5,7 @@ import (
 
 	"net/url"
 	"regexp"
+	"strings"
 )
 
 // URL is configuration parameters for the destination
@@ -32,6 +33,18 @@ func (u *URL) setup() error {
 		u.pathRewriters = append(u.pathRewriters, rwr)
 	}
 	return nil
+}
+
+// String returns string representation of this configuration. useful for debugging.
+func (u *URL) String() string {
+	b := strings.Builder{}
+	if u == nil {
+		return b.String()
+	}
+	for k, v := range u.RewritePaths {
+		b.WriteString(fmt.Sprintf("RewritePath: %s: %s\n", k, v))
+	}
+	return b.String()
 }
 
 // PathRewriter is an interface to path rewrite

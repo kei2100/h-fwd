@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"net/url"
 	"testing"
 )
@@ -19,6 +20,20 @@ func TestURL(t *testing.T) {
 	if g, w := len(c.PathRewriters()), 2; g != w {
 		t.Errorf("len(c.PathRewriters()) got %v, want %v", g, w)
 	}
+}
+
+func TestURL_String(t *testing.T) {
+	c := &URL{
+		RewritePaths: map[string]string{
+			"/user": "/users",
+		},
+	}
+	got := fmt.Sprintf("%v", c)
+	want := "RewritePath: /user: /users\n"
+	if g, w := got, want; g != w {
+		t.Errorf("String() got %v, want %v", g, w)
+	}
+
 }
 
 func mustURL(u string) *url.URL {

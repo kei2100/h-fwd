@@ -2,6 +2,7 @@ package config
 
 import (
 	"crypto/tls"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -44,5 +45,21 @@ func TestTLSClient(t *testing.T) {
 	defer resp.Body.Close()
 	if g, w := resp.StatusCode, 200; g != w {
 		t.Errorf("resp.StatusCode got %v, want %v", g, w)
+	}
+}
+
+func TestTLSClient_Format(t *testing.T) {
+	tlsp := &TLSClient{
+		CACertPath:     "testdata/cacert.pem",
+		PKCS12Path:     "testdata/clicert.pfx",
+		PKCS12Password: "pass",
+	}
+	got := fmt.Sprintf("%s", tlsp)
+	want := `CACertPath: testdata/cacert.pem
+PKCS12Path: testdata/clicert.pfx
+PKCS12Password: ****
+`
+	if g, w := got, want; g != w {
+		t.Errorf("Strings() got %v, want %v", g, w)
 	}
 }
