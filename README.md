@@ -1,5 +1,5 @@
 # h-fwd
-Simple HTTP foward proxy written in Golang
+Simple HTTP request forwarder written in Golang
 
 ## Usage
 ```
