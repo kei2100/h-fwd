@@ -47,11 +47,11 @@ ifndef NEW_VERSION
 	  read -p $$'\e[33mPlease enter the version name for the new release\e[0m: ' new_version; \
 	  echo $${new_version} \
 	 ))
+	git tag -a $(NEW_VERSION) -m ""
+	git push origin $(NEW_VERSION)
 endif
 
 release: version.new
 	@ read -p $$'\e[33mRelease $(NEW_VERSION) ? (y/n)\e[0m: ' answer; \
 	if [ "$${answer}" != "y" ]; then exit 1; fi
-	git tag -a $(NEW_VERSION) -m ""
-	git push origin $(NEW_VERSION)
 	goreleaser --rm-dist
