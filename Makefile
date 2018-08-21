@@ -42,10 +42,12 @@ version.list:
 	@ git tag -l | sort -nr | head -5
 
 version.new: version.list
+ifndef NEW_VERSION
 	$(eval NEW_VERSION = $(shell \
 	  read -p $$'\e[33mPlease enter the version name for the new release\e[0m: ' new_version; \
 	  echo $${new_version} \
 	 ))
+endif
 
 release: version.new
 	@ read -p $$'\e[33mRelease $(NEW_VERSION) ? (y/n)\e[0m: ' answer; \
