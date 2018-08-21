@@ -2,6 +2,18 @@
 
 
 [[projects]]
+  branch = "master"
+  digest = "1:875fe9a0dc3abec8ad91dc62a9ab83bd38a7a695a090b50f20e0d72419523958"
+  name = "github.com/dsnet/compress"
+  packages = [
+    "brotli",
+    "internal",
+    "internal/errors",
+  ]
+  pruneopts = "UT"
+  revision = "cc9eb1d7ad760af14e8f918698f745e80377af4f"
+
+[[projects]]
   digest = "1:870d441fe217b8e689d7949fef6e43efbc787e50f200cb1e70dbca9204a1d6be"
   name = "github.com/inconshreveable/mousetrap"
   packages = ["."]
@@ -40,6 +52,7 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/dsnet/compress/brotli",
     "github.com/spf13/cobra",
     "golang.org/x/crypto/pkcs12",
   ]

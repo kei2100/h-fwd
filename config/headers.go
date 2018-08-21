@@ -2,7 +2,9 @@ package config
 
 import (
 	"encoding/base64"
+	"fmt"
 	"net/http"
+	"strings"
 )
 
 // Headers is configuration parameters for the http header
@@ -23,4 +25,22 @@ func (h *Headers) setup() error {
 		h.Header.Set("Authorization", "Basic "+string(dst))
 	}
 	return nil
+}
+
+// String returns string representation of this configuration. useful for debugging.
+func (h *Headers) String() string {
+	b := strings.Builder{}
+	if h == nil {
+		return b.String()
+	}
+	b.WriteString(fmt.Sprintf("Username: %s\n", h.Username))
+	b.WriteString(fmt.Sprintf("Password: %s\n", strings.Repeat("*", len(h.Password))))
+	for k := range h.Header {
+		v := h.Header.Get(k)
+		if k == "Authorization" {
+			v = strings.Repeat("*", len(v))
+		}
+		b.WriteString(fmt.Sprintf("Header: %s: %s\n", k, v))
+	}
+	return b.String()
 }

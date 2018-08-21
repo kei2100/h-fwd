@@ -12,18 +12,33 @@ import (
 
 	"net/http/httputil"
 
+	"fmt"
+
+	"bytes"
+	"compress/flate"
+	"compress/gzip"
+	"io/ioutil"
+
+	"github.com/dsnet/compress/brotli"
 	"github.com/kei2100/h-fwd/config"
 )
 
 // NewHandler returns http.Handler which performs forward proxy.
-// dst represents destination base URL. the format must be "http[s]://[user:pass@]host[:port][/base/path]"
-// params are configuration parameters of the forward proxy.
 func NewHandler(dst *url.URL, params *config.Parameters) (http.Handler, error) {
 	if err := validateDestinatin(dst); err != nil {
 		return nil, err
 	}
+	var tran http.RoundTripper
+	tran = &http.Transport{TLSClientConfig: params.TLSClientConfig()}
+	if params.Verbose {
+		log.Printf("hfwd destination is %v", dst.String())
+		log.Printf("hfwd configuration parameters are\n%s", params)
+		tran = &verboseRoundTripper{
+			chain: &http.Transport{TLSClientConfig: params.TLSClientConfig()},
+		}
+	}
 	forwarder := &http.Client{
-		Transport: &http.Transport{TLSClientConfig: params.TLSClientConfig()},
+		Transport: tran,
 	}
 	return &server{dst: dst, params: params, forwarder: forwarder}, nil
 }
@@ -64,14 +79,6 @@ func (s *server) ServeHTTP(w http.ResponseWriter, orig *http.Request) {
 		return
 	}
 	defer res.Body.Close()
-
-	if s.params.Verbose {
-		d, err := httputil.DumpRequestOut(req, true)
-		if err != nil {
-			log.Printf("hfwd: failed to dump the request: %v", err)
-		}
-		log.Printf("hfwd: send a request\n%v", string(d))
-	}
 
 	for h, vv := range res.Header {
 		for _, v := range vv {
@@ -136,4 +143,79 @@ var hopByHopHeaders = map[string]struct{}{
 	"Trailers":          {},
 	"Transfer-Encoding": {},
 	"Upgrade":           {},
+}
+
+type verboseRoundTripper struct {
+	chain http.RoundTripper
+}
+
+func (rt *verboseRoundTripper) RoundTrip(req *http.Request) (res *http.Response, err error) {
+	var reqDump, resDump []byte
+	defer func() {
+		b := bytes.Buffer{}
+		if len(reqDump) > 0 {
+			b.WriteString("\n>>> hfwd send a request\n")
+			b.Write(reqDump)
+		}
+		if len(resDump) > 0 {
+			b.WriteString("<<< hfwd receive a response\n")
+			b.Write(resDump)
+		}
+		log.Print(b.String())
+	}()
+
+	// dump request
+	reqDump, err = httputil.DumpRequest(req, true)
+	if err != nil {
+		return nil, fmt.Errorf("hfwd: failed to dump the request: %v", err)
+	}
+
+	res, err = rt.chain.RoundTrip(req)
+	if err != nil {
+		return nil, err
+	}
+
+	// dump response
+	resDump, err = httputil.DumpResponse(res, false)
+	if err != nil {
+		return nil, fmt.Errorf("hfwd: failed to dump the response header: %v", err)
+	}
+	// TODO configurable
+	if false {
+		resDumpBody := make([]byte, 0)
+		body := res.Body
+		cl := res.ContentLength
+		defer body.Close()
+
+		raw, err := ioutil.ReadAll(body)
+		if err != nil {
+			return nil, fmt.Errorf("hfwd: failed to read the response body: %v", err)
+		}
+		res.Body = ioutil.NopCloser(bytes.NewReader(raw))
+		res.ContentLength = cl
+
+		rd := ioutil.NopCloser(bytes.NewReader(raw))
+		switch res.Header.Get("Content-Encoding") {
+		case "gzip":
+			if rd, err = gzip.NewReader(rd); err != nil {
+				return nil, fmt.Errorf("hfwd: failed to create gzip reader for read the response body: %v", err)
+			}
+		case "deflate":
+			rd = flate.NewReader(rd)
+		case "br":
+			if rd, err = brotli.NewReader(rd, nil); err != nil {
+				return nil, fmt.Errorf("hfwd: failed to create brotli reader for read the response body: %v", err)
+			}
+		}
+
+		resDumpBody, err = ioutil.ReadAll(rd)
+		if err != nil {
+			return nil, fmt.Errorf("hfwd: failed to dump the response body: %v", err)
+		}
+		if len(resDumpBody) > 0 {
+			resDump = bytes.Join([][]byte{resDump, resDumpBody}, []byte("\r\n"))
+		}
+	}
+
+	return res, nil
 }
